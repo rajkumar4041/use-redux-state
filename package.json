@@ -1,0 +1,27 @@
+{
+  "name": "use-redux-state",
+  "version": "1.0.0",
+  "description": "building this redux state for reducing complexity",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "redux",
+    "redux-toolkit",
+    "hook",
+    "useState"
+  ],
+  "author": "Rajkumar Rathod",
+  "license": "MIT",
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
+    "react": "^19.1.0",
+    "react-redux": "^9.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.0.0"
+  }
+}

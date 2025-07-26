@@ -1,0 +1,1 @@
+building this redux state for reducing complexity
