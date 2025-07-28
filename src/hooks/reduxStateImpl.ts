@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSliceForKey, getSliceForKey } from '../store';
 import { RootState } from '../types';
@@ -20,7 +19,7 @@ type ReturnAction<T> = {
 };
 
 // Return type for the hook
-type UseGlobalStateReturn<T> = [T, SetValueFunction<T>, ReturnAction<T>];
+export type useReduxStateReturn<T> = [T, SetValueFunction<T>, ReturnAction<T>];
 
 /**
  * Custom hook for global state management
@@ -28,7 +27,10 @@ type UseGlobalStateReturn<T> = [T, SetValueFunction<T>, ReturnAction<T>];
  * @param initialValue - Initial value for the state
  * @returns [value, setValue, { update, reset }]
  */
-function useGlobalStateWithInitial<T>(key: string, initialValue: T): UseGlobalStateReturn<T> {
+export const useReduxStateWithInitial = <T>(
+  key: string,
+  initialValue: T
+): useReduxStateReturn<T> => {
   const dispatch = useDispatch();
 
   // Create or get the slice for this key
@@ -84,14 +86,14 @@ function useGlobalStateWithInitial<T>(key: string, initialValue: T): UseGlobalSt
   const currentValue = value !== undefined ? value : initialValue;
 
   return [currentValue, setValue, { update, reset }];
-}
+};
 
 /**
  * Custom hook for accessing existing global state
  * @param key - Unique identifier for the global state
  * @returns [value, setValue, { update, reset }]
  */
-function useGlobalStateExisting<T>(key: string): UseGlobalStateReturn<T> {
+export const useReduxStateExisting = <T>(key: string): useReduxStateReturn<T> => {
   const dispatch = useDispatch();
 
   // Try to get existing slice
@@ -130,16 +132,4 @@ function useGlobalStateExisting<T>(key: string): UseGlobalStateReturn<T> {
   }, [dispatch, existingSlice.actions]);
 
   return [value, setValue, { update, reset }];
-}
-
-// Overloaded function signatures
-export function useGlobalState<T>(key: string, initialValue: T): UseGlobalStateReturn<T>;
-export function useGlobalState<T>(key: string): UseGlobalStateReturn<T>;
-
-// Implementation
-export function useGlobalState<T>(key: string, initialValue?: T): UseGlobalStateReturn<T> {
-  if (initialValue === undefined) {
-    return useGlobalStateExisting<T>(key);
-  }
-  return useGlobalStateWithInitial<T>(key, initialValue);
-}
+};
