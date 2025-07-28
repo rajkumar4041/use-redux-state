@@ -9,3 +9,6 @@ dist/
 
 # Vite cache
 .vite/
+
+# vsCode settings
+.vscode/
