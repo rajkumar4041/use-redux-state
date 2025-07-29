@@ -7,7 +7,7 @@ import { RootState } from '../types';
  * @param selector - Function to select specific data from the state
  * @returns The selected value
  */
-export function useGlobalStateSelector<T, R>(key: string, selector: (state: T) => R): R {
+export function useReduxStateSelector<T, R>(key: string, selector: (state: T) => R): R {
   return useSelector((state: RootState) => {
     const globalState = (state as any)[key] as T;
     if (globalState === undefined) {
