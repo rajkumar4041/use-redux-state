@@ -2,7 +2,7 @@ import {
   useReduxStateExisting,
   useReduxStateReturn,
   useReduxStateWithInitial,
-} from './reduxStateImpl';
+} from '../impl/reduxStateImpl';
 
 /**
  * @description declaration for useReduxState hook
