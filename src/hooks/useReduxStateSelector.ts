@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { RootState } from '../types';
+import type { RootState } from '../types';
 
 /**
  * Hook for selecting specific parts of global state

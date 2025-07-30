@@ -12,3 +12,6 @@ dist/
 
 # vsCode settings
 .vscode/
+
+# test setup file
+use-redux-state-1.0.0.tgz

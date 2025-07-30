@@ -6,7 +6,7 @@ interface GlobalStateProviderProps {
   children: React.ReactNode;
 }
 
-export function GlobalStateProvider({ children }: GlobalStateProviderProps) {
+export function GlobalReduxProvider({ children }: GlobalStateProviderProps) {
   const store = getStore();
 
   return <Provider store={store}>{children}</Provider>;
