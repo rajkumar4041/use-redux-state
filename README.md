@@ -89,7 +89,7 @@ const [value, setValue, { update, reset }] = useReduxState(key, initialValue);
 Select specific parts of global state with a selector function.
 
 ```tsx
-const selectedValue = useReduxStateSelector(key, (state) => state.someProperty);
+const selectedValue = useReduxStateSelector(key, state => state.someProperty);
 ```
 
 ### `useReduxStateValue(key)`
@@ -164,7 +164,7 @@ function Settings() {
 ```tsx
 function UserList() {
   // Select only the users array from the global state
-  const users = useReduxStateSelector('users', (state) => state.list);
+  const users = useReduxStateSelector('users', state => state.list);
 
   // Select multiple states
   const { user, settings } = useMultipleGlobalStates(['user', 'settings']);
@@ -174,7 +174,7 @@ function UserList() {
       <h3>Welcome, {user.name}!</h3>
       <p>Theme: {settings.theme}</p>
       <ul>
-        {users.map((user) => (
+        {users.map(user => (
           <li key={user.id}>{user.name}</li>
         ))}
       </ul>
@@ -192,7 +192,7 @@ function ShoppingCart() {
     total: 0,
   });
 
-  const addItem = (item) => {
+  const addItem = item => {
     const newItems = [...cart.items, item];
     const newTotal = newItems.reduce((sum, item) => sum + item.price, 0);
     update({ items: newItems, total: newTotal });
@@ -273,6 +273,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ by [Rajkumar Rathod](https://github.com/your-username)**
+**Made with ❤️ by [Rajkumar Rathod](https://github.com/rajkumar4041)**
 
 If you find this library helpful, please consider giving it a ⭐ on GitHub!
