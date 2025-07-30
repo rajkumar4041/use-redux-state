@@ -22,8 +22,8 @@ type ReturnAction<T> = {
 export type useReduxStateReturn<T> = [T, SetValueFunction<T>, ReturnAction<T>];
 
 /**
- * Custom hook for global state management
- * @param key - Unique identifier for the global state
+ * Custom hook for redux State management
+ * @param key - Unique identifier for the redux State
  * @param initialValue - Initial value for the state
  * @returns [value, setValue, { update, reset }]
  */
@@ -89,18 +89,20 @@ export const useReduxStateWithInitial = <T>(
 };
 
 /**
- * Custom hook for accessing existing global state
- * @param key - Unique identifier for the global state
+ * Custom hook for accessing existing redux State
+ * @param key - Unique identifier for the redux State
  * @returns [value, setValue, { update, reset }]
  */
-export const useReduxStateExisting = <T>(key: string): useReduxStateReturn<T> => {
+export const useReduxStateExisting = <T>(
+  key: string
+): useReduxStateReturn<T> => {
   const dispatch = useDispatch();
 
   // Try to get existing slice
   const existingSlice = getSliceForKey<T>(key);
   if (!existingSlice) {
     throw new Error(
-      `Global state with key "${key}" does not exist. Please provide an initial value.`
+      `redux State with key "${key}" does not exist. Please provide an initial value.`
     );
   }
 
