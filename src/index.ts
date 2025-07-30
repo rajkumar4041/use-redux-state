@@ -1,6 +1,10 @@
 /** Main exports */
 export { useReduxState } from './hooks/useReduxState';
-export { useReduxStateSelector, useMultipleGlobalStates } from './hooks/useReduxStateSelector';
+export {
+  useReduxStateSelector,
+  useMultipleGlobalStates,
+  useReduxStateValue,
+} from './hooks/useReduxStateSelector';
 export { GlobalReduxProvider } from './provider';
 
 export type { RootState } from './types';
