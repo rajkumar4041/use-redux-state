@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSliceForKey, getSliceForKey } from '../store';
-import { RootState } from '../types';
+import type { RootState } from '../types';
 
 // Type for the setter function
 type SetValueFunction<T> = (value: T | ((prevValue: T) => T)) => void;
