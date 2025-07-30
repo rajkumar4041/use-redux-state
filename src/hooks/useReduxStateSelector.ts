@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { RootState } from '../types';
+import type { RootState } from '../types';
 
 /**
  * Hook for selecting specific parts of global state
@@ -16,6 +16,19 @@ export function useReduxStateSelector<T, R>(key: string, selector: (state: T) =>
     return selector(globalState);
   });
 }
+
+/**
+ * This hook is useful for accessing a specific value from the global state without needing to provide a selector function.
+ * Hook for selecting a specific global state value
+ *
+ * @param key - The global state key
+ * @template T - The type of the global state value
+ *
+ * @returns The value of the global state
+ */
+export const useReduxStateValue = <T>(key: string): T => {
+  return useSelector((state: RootState) => (state as any)[key] as T);
+};
 
 /**
  * Hook for selecting multiple global states at once
