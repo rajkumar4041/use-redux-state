@@ -9,7 +9,7 @@ A powerful and lightweight React hook library that simplifies Redux state manage
 
 ## ✨ Features
 
-- 🎯 **Simple API**: Use global state with a familiar `useState`-like interface
+- 🎯 **Simple API**: Use redux State with a familiar `useState`-like interface
 - 🔄 **Dynamic State Creation**: Automatically create and manage Redux slices on-demand
 - 🎨 **TypeScript Support**: Full TypeScript support with excellent type inference
 - ⚡ **Performance Optimized**: Built on Redux Toolkit for optimal performance
@@ -45,7 +45,7 @@ function App() {
 }
 ```
 
-### 2. Use global state anywhere in your app
+### 2. Use redux State anywhere in your app
 
 ```tsx
 import { useReduxState } from 'use-redux-state';
@@ -66,7 +66,7 @@ function Counter() {
 
 ### `useReduxState(key, initialValue?)`
 
-The main hook for managing global state. Works just like `useState` but with global scope.
+The main hook for managing redux State. Works just like `useState` but with global scope.
 
 ```tsx
 const [value, setValue, { update, reset }] = useReduxState(key, initialValue);
@@ -74,7 +74,7 @@ const [value, setValue, { update, reset }] = useReduxState(key, initialValue);
 
 **Parameters:**
 
-- `key` (string): Unique identifier for the global state
+- `key` (string): Unique identifier for the redux State
 - `initialValue` (optional): Initial value for the state
 
 **Returns:**
@@ -86,7 +86,7 @@ const [value, setValue, { update, reset }] = useReduxState(key, initialValue);
 
 ### `useReduxStateSelector(key, selector)`
 
-Select specific parts of global state with a selector function.
+Select specific parts of redux State with a selector function.
 
 ```tsx
 const selectedValue = useReduxStateSelector(key, (state) => state.someProperty);
@@ -94,7 +94,7 @@ const selectedValue = useReduxStateSelector(key, (state) => state.someProperty);
 
 ### `useReduxStateValue(key)`
 
-Get the entire value of a global state without a selector.
+Get the entire value of a redux State without a selector.
 
 ```tsx
 const stateValue = useReduxStateValue(key);
@@ -102,7 +102,7 @@ const stateValue = useReduxStateValue(key);
 
 ### `useMultipleGlobalStates(keys)`
 
-Select multiple global states at once.
+Select multiple redux States at once.
 
 ```tsx
 const states = useMultipleGlobalStates(['user', 'settings', 'theme']);
@@ -163,7 +163,7 @@ function Settings() {
 
 ```tsx
 function UserList() {
-  // Select only the users array from the global state
+  // Select only the users array from the State
   const users = useReduxStateSelector('users', (state) => state.list);
 
   // Select multiple states
