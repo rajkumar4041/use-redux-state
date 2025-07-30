@@ -273,6 +273,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ by [Rajkumar Rathod](https://github.com/your-username)**
+**Made with ❤️ by [Rajkumar Rathod](https://github.com/rajkumar4041)**
 
-If you find this library helpful, please consider giving it a ⭐ on GitHub!
+If you find this library helpful, please consider giving it a ⭐ on GitHub! [useReduxState](https://github.com/rajkumar4041/use-redux-state)
