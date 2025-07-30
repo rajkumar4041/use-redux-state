@@ -1,10 +1,18 @@
 /** Main exports */
 export { useReduxState } from './hooks/useReduxState';
 export { useReduxStateSelector, useMultipleGlobalStates } from './hooks/useReduxStateSelector';
-export { GlobalStateProvider } from './provider';
+export { GlobalReduxProvider } from './provider';
 
 export type { RootState } from './types';
 
-export {} from './store';
+/** advance imports */
+export {
+  getStore,
+  createSliceForKey,
+  getSliceForKey,
+  getRegisteredKeys,
+  clearSlices,
+} from './store';
 
-export { GlobalStateProvider as default } from './provider';
+/** Default export */
+export { GlobalReduxProvider as default } from './provider';
