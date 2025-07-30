@@ -1,24 +1,53 @@
 {
   "name": "use-redux-state",
   "version": "1.0.0",
-  "description": "building this redux state for reducing complexity",
+  "description": "🚀 A powerful & lightweight React hook library that simplifies Redux state management with a familiar useState-like API. Built on Redux Toolkit for optimal performance.",
   "main": "dist/index.js",
+  "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
-    "dist/"
+    "dist/",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prebuild": "npm run clean",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch"
   },
   "keywords": [
     "react",
     "redux",
     "redux-toolkit",
     "hook",
-    "useState"
+    "useState",
+    "state-management",
+    "global-state",
+    "typescript",
+    "react-hooks",
+    "state",
+    "store",
+    "reducer",
+    "middleware",
+    "immutable",
+    "predictable",
+    "devtools"
   ],
-  "author": "Rajkumar Rathod",
+  "author": {
+    "name": "Rajkumar Rathod",
+    "email": "rajkumarrathod414@gmail.com",
+    "url": "https://github.com/rajkumar4041"
+  },
   "license": "MIT",
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
@@ -29,5 +58,29 @@
     "@types/react": "^19.0.0",
     "typescript": "^5.0.0",
     "vite": "^7.0.6"
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 80,
+    "tabWidth": 2
+  },
+  "eslintConfig": {
+    "extends": [
+      "@typescript-eslint/recommended",
+      "plugin:react/recommended",
+      "plugin:react-hooks/recommended",
+      "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint",
+      "react",
+      "react-hooks"
+    ],
+    "rules": {
+      "react/react-in-jsx-scope": "off"
+    }
   }
 }

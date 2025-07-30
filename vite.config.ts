@@ -12,14 +12,20 @@ export default defineConfig({
       name: 'useReduxState',
       // output formats for the library
       formats: ['cjs', 'es'],
-      fileName: (format) => `index.${format}.js`,
+      fileName: format => `index.${format}.js`,
     },
     rollupOptions: {
-      //         Marks these packages as external, meaning they won’t be bundled into your final output.
-      // This keeps your package lean and avoids duplicating dependencies in users' apps.
+      // Marks these packages as external, meaning they won’t be bundled into final output.
+      // This keeps  package lean and avoids duplicating dependencies in users' apps.
       external: ['react', 'react-dom', 'react-redux', '@reduxjs/toolkit'],
       output: {
         sourcemap: true,
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM',
+          'react-redux': 'ReactRedux',
+          '@reduxjs/toolkit': 'ReduxToolkit',
+        },
       },
     },
     // This is where you can specify how the library should be minified.
