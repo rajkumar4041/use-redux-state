@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "description": "🚀 A powerful & lightweight React hook library that simplifies Redux state management with a familiar useState-like API. Built on Redux Toolkit for optimal performance.",
   "main": "dist/index.js",
-  "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.esm.js",
+      "import": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
@@ -47,6 +46,10 @@
     "name": "Rajkumar Rathod",
     "email": "rajkumarrathod414@gmail.com",
     "url": "https://github.com/rajkumar4041"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rajkumar4041/use-redux-state.git"
   },
   "license": "MIT",
   "dependencies": {
