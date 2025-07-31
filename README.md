@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
 
-A powerful and lightweight React hook library that simplifies Redux state management with a familiar `useState`-like API. Built on top of Redux Toolkit for optimal performance and developer experience.
+A powerful and lightweight React hook library that simplifies Redux state management with a familiar `useState`-like API. Built on top of Redux Toolkit for optimal performance and developer experience. [Demo]("our_demo")
 
 ## ✨ Features
 
@@ -131,9 +131,21 @@ function UserProfile() {
       <h2>{user.name}</h2>
       <p>{user.email}</p>
       <button onClick={() => updateName('Jane Doe')}>Update Name</button>
+      {/**`DATA` accessible to the child component **/}
+      <ChildComponent />
     </div>
   );
 }
+
+const ChildComponent = () => {
+  // getter variable with state
+  const [userState] = useReduxState('user');
+
+  // without state (value getter)
+  const user = useReduxStateValue('user');
+
+  return <div>{user.name}</div>;
+};
 ```
 
 ### Using Partial Updates
@@ -259,7 +271,159 @@ function TypedComponent() {
 
 ## 🤝 Contributing
 
-We welcome contributions! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+We welcome contributions from the community! Whether you're fixing bugs, adding features, or improving documentation, your help is appreciated.
+
+### How to Contribute
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Make your changes** following our coding standards
+4. **Add tests** for new functionality
+5. **Commit your changes** (`git commit -m 'Add amazing feature'`)
+6. **Push to the branch** (`git push origin feature/amazing-feature`)
+7. **Open a Pull Request**
+
+### Development Setup
+
+```bash
+# Fork and clone the repository
+git clone https://github.com/YOUR_USERNAME/use-redux-state.git
+cd use-redux-state
+
+# Install dependencies
+npm install
+
+# Start development mode
+npm run dev
+
+# Build the project
+npm run build
+```
+
+### Code Standards
+
+- Follow TypeScript best practices
+- Add JSDoc comments for public APIs
+- Write meaningful commit messages
+- Include tests for new features
+- Update documentation as needed
+
+For detailed guidelines, see our [Contributing Guide](CONTRIBUTING.md).
+
+## 🐛 Bug Reports
+
+Found a bug? We'd love to help fix it! Please report bugs using our [bug report template](https://github.com/rajkumar4041/use-redux-state/issues/new?template=bug_report.md).
+
+### Before Reporting
+
+- Check if the issue has already been reported
+- Try the latest version of the package
+- Provide a minimal reproduction example
+- Include your environment details
+
+### What to Include
+
+- Clear description of the bug
+- Steps to reproduce
+- Expected vs actual behavior
+- Code example
+- Environment information (OS, browser, versions)
+
+## 🔒 Security
+
+We take security seriously. If you discover a security vulnerability, please report it privately.
+
+### Reporting Security Issues
+
+**Do not create a public GitHub issue for security vulnerabilities.**
+
+Instead, please email us at: **rajkumarrathod414@gmail.com**
+
+### What to Include
+
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if any)
+
+### Response Timeline
+
+- **Initial response**: Within 48 hours
+- **Investigation**: Prompt and thorough
+- **Fix release**: As quickly as possible
+- **Public disclosure**: Coordinated with reporter
+
+For more details, see our [Security Policy](.github/SECURITY.md).
+
+## 📞 Support
+
+Need help? We're here to support you!
+
+### Getting Help
+
+1. **📖 Documentation**: Check our [README](README.md) and [examples]("#url_need_update")
+2. **🔍 Issues**: Search [existing issues](https://github.com/rajkumar4041/use-redux-state/issues)
+<!-- 3. **💬 Discussions**: Join our [GitHub Discussions](https://github.com/rajkumar4041/use-redux-state/discussions) -->
+3. **📧 Email**: Contact us directly at rajkumarrathod414@gmail.com
+
+### Common Issues
+
+**Installation Problems**
+
+```bash
+# Make sure you're using the correct package name
+npm install use-redux-state
+
+# For TypeScript support
+npm install --save-dev @types/react @types/react-redux
+```
+
+**Runtime Errors**
+
+```tsx
+// ❌ Wrong - missing provider
+function App() {
+  return <YourApp />;
+}
+
+// ✅ Correct - with provider
+import { GlobalReduxProvider } from 'use-redux-state';
+
+function App() {
+  return (
+    <GlobalReduxProvider>
+      <YourApp />
+    </GlobalReduxProvider>
+  );
+}
+```
+
+**State Access Issues**
+
+```tsx
+// ❌ Wrong - accessing non-existent state
+const [user, setUser] = useReduxState('user');
+
+// ✅ Correct - provide initial value
+const [user, setUser] = useReduxState('user', { name: '', email: '' });
+```
+
+### Support Channels
+
+- **📧 Email**: rajkumarrathod414@gmail.com (24-48 hour response)
+- **🐛 Issues**: [GitHub Issues](https://github.com/rajkumar4041/use-redux-state/issues)
+  <!-- - **💬 Discussions**: [GitHub Discussions](https://github.com/rajkumar4041/use-redux-state/discussions) -->
+  <!-- - **📖 Wiki**: [GitHub Wiki](https://github.com/rajkumar4041/use-redux-state/wiki) -->
+
+For detailed support information, see our [Support Guide](.github/SUPPORT.md).
+
+## 🔗 Quick Links
+
+- **[📖 Contributing](CONTRIBUTING.md)** - How to contribute to this project
+- **[🐛 Bug Reports](https://github.com/rajkumar4041/use-redux-state/issues/new?template=bug_report.md)** - Report a bug
+- **[🔒 Security](.github/SECURITY.md)** - Security policy and vulnerability reporting
+- **[📞 Support](.github/SUPPORT.md)** - Get help and support
+<!-- - **[📋 Changelog](CHANGELOG.md)** - Version history and updates -->
 
 ## 📄 License
 
@@ -270,6 +434,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Built with [Redux Toolkit](https://redux-toolkit.js.org/)
 - Inspired by React's `useState` hook
 - Made with ❤️ for the React community
+- Special thanks to all our contributors and users
 
 ---
 
