@@ -1,6 +1,6 @@
 # 🚀 redux-toolkit-state
 
-[![npm version](https://badge.fury.io/js/use-redux-state.svg)](https://badge.fury.io/js/use-redux-state)
+[![npm version](https://badge.fury.io/js/use-redux-state.svg)](https://www.npmjs.com/package/redux-toolkit-state)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
@@ -20,13 +20,13 @@ A powerful and lightweight React hook library that simplifies Redux state manage
 ## 📦 Installation
 
 ```bash
-npm install use-redux-state
+npm i redux-toolkit-state
 ```
 
 or
 
 ```bash
-yarn add use-redux-state
+yarn add use-toolkit-state
 ```
 
 ## 🚀 Quick Start
@@ -34,7 +34,7 @@ yarn add use-redux-state
 ### 1. Wrap your app with the provider
 
 ```tsx
-import { GlobalReduxProvider } from 'use-redux-state';
+import { GlobalReduxProvider } from 'use-toolkit-state';
 
 function App() {
   return (
@@ -48,7 +48,7 @@ function App() {
 ### 2. Use redux State anywhere in your app
 
 ```tsx
-import { useReduxState } from 'use-redux-state';
+import { useReduxState } from 'use-toolkit-state';
 
 function Counter() {
   const [count, setCount] = useReduxState('counter', 0);
@@ -113,7 +113,7 @@ const states = useMultipleGlobalStates(['user', 'settings', 'theme']);
 ### Basic Usage
 
 ```tsx
-import { useReduxState } from 'use-redux-state';
+import { useReduxState } from 'use-toolkit-state';
 
 function UserProfile() {
   const [user, setUser] = useReduxState('user', {
@@ -229,7 +229,7 @@ function ShoppingCart() {
 ### Store Management
 
 ```tsx
-import { clearSlices, getRegisteredKeys, getStore } from 'use-redux-state';
+import { clearSlices, getRegisteredKeys, getStore } from 'use-toolkit-state';
 
 // Get the store instance
 const store = getStore();
@@ -287,7 +287,7 @@ We welcome contributions from the community! Whether you're fixing bugs, adding 
 
 ```bash
 # Fork and clone the repository
-git clone https://github.com/YOUR_USERNAME/use-redux-state.git
+git clone https://github.com/rajkumar4041/use-redux-state.git
 cd use-redux-state
 
 # Install dependencies
@@ -372,7 +372,7 @@ Need help? We're here to support you!
 
 ```bash
 # Make sure you're using the correct package name
-npm install use-redux-state
+npm install use-toolkit-state
 
 # For TypeScript support
 npm install --save-dev @types/react @types/react-redux
@@ -387,7 +387,7 @@ function App() {
 }
 
 // ✅ Correct - with provider
-import { GlobalReduxProvider } from 'use-redux-state';
+import { GlobalReduxProvider } from 'use-toolkit-state';
 
 function App() {
   return (
