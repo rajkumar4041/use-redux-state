@@ -1,6 +1,6 @@
 {
   "name": "redux-toolkit-state",
-  "version": "1.1.0",
+  "version": "2.1.0",
   "description": "🚀 A powerful & lightweight React hook library that simplifies Redux state management with a familiar useState-like API. Built on Redux Toolkit for optimal performance.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
