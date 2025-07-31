@@ -1,5 +1,7 @@
 # Source files
 src/
+.env
+*.log
 tests/
 test/
 __tests__/
