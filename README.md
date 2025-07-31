@@ -1,4 +1,4 @@
-# 🚀 use-redux-state
+# 🚀 use-redux-state (redux-toolkit-state)
 
 [![npm version](https://badge.fury.io/js/use-redux-state.svg)](https://badge.fury.io/js/use-redux-state)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
