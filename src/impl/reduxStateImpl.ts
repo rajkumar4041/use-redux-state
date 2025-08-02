@@ -4,7 +4,7 @@ import { createSliceForKey, getSliceForKey } from '../store';
 import type { RootState } from '../types';
 
 // Type for the setter function
-type SetValueFunction<T> = (value: T | ((prevValue: T) => T)) => void;
+export type SetValueFunction<T> = (value: T | ((prevValue: T) => T)) => void;
 
 // Type for the update function (for partial updates)
 type UpdateValueFunction<T> = (updates: Partial<T>) => void;
@@ -13,7 +13,7 @@ type UpdateValueFunction<T> = (updates: Partial<T>) => void;
 type ResetFunction = () => void;
 
 // Type for the return action object
-type ReturnAction<T> = {
+export type ReturnAction<T> = {
   update: UpdateValueFunction<T>;
   reset: ResetFunction;
 };
