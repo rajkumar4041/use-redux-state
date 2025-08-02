@@ -68,6 +68,18 @@ function Counter() {
 
 The main hook for managing redux State. Works just like `useState` but with global scope.
 
+**Parameters:**
+
+- `key` (string): Unique identifier for the redux State
+- `initialValue` (optional): Initial value for the state
+
+**Returns:**
+
+- `value`: Current state value
+- `setValue`: Function to update the entire state
+- `update`: Function to merge partial updates
+- `reset`: Function to reset state to initial value
+
 ```tsx
 const [value, setValue, { update, reset }] = useReduxState(key, initialValue);
 ```
@@ -103,18 +115,6 @@ const resetFnc = useReduxStateReset(key);
 //call while need
 resetFnc();
 ```
-
-**Parameters:**
-
-- `key` (string): Unique identifier for the redux State
-- `initialValue` (optional): Initial value for the state
-
-**Returns:**
-
-- `value`: Current state value
-- `setValue`: Function to update the entire state
-- `update`: Function to merge partial updates
-- `reset`: Function to reset state to initial value
 
 ### `useReduxStateSelector(key, selector)`
 
