@@ -72,6 +72,38 @@ The main hook for managing redux State. Works just like `useState` but with glob
 const [value, setValue, { update, reset }] = useReduxState(key, initialValue);
 ```
 
+### `useReduxStateValue(key)`
+
+Get the entire value of a redux State without a selector.
+
+```tsx
+const value = useReduxStateValue(key);
+```
+
+### `useReduxStateSetValue(key, initialValue?)`
+
+Provide only Setter [setVal,update]
+
+#### note : update is for partial update
+
+```tsx
+const [setValue, update] = useReduxStateSetValue(key);
+
+// update (partially)
+// setValue (setter)
+```
+
+### `useReduxStateReset(key)`
+
+Provide Reset Handler to reset Particular slice to its initial state
+
+```tsx
+const resetFnc = useReduxStateReset(key);
+
+//call while need
+resetFnc();
+```
+
 **Parameters:**
 
 - `key` (string): Unique identifier for the redux State
@@ -90,14 +122,6 @@ Select specific parts of redux State with a selector function.
 
 ```tsx
 const selectedValue = useReduxStateSelector(key, (state) => state.someProperty);
-```
-
-### `useReduxStateValue(key)`
-
-Get the entire value of a redux State without a selector.
-
-```tsx
-const stateValue = useReduxStateValue(key);
 ```
 
 ### `useMultipleGlobalStates(keys)`
