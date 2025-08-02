@@ -85,7 +85,7 @@ export const useReduxStateSetValue = <T>(
  *
  * @returns {() => void} reset - Function to reset the value to its initial state
  */
-export const useResetReduxState = <T>(key: string): (() => void) => {
+export const useReduxStateReset = <T>(key: string): (() => void) => {
   const [_getter, _setter, { reset }] = useReduxState<T>(key);
 
   return reset;

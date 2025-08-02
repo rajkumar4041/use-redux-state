@@ -4,6 +4,8 @@ export {
   useReduxStateSelector,
   useMultipleGlobalStates,
   useReduxStateValue,
+  useReduxStateSetValue,
+  useReduxStateReset,
 } from './hooks/useReduxStateSelector';
 export { GlobalReduxProvider } from './provider';
 
