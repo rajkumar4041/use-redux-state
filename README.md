@@ -7,7 +7,7 @@
 
 A powerful and lightweight React hook library that simplifies Redux state management with a familiar `useState`-like API. Built on top of Redux Toolkit for optimal performance and developer experience
 
-[Documentation/demo](https://use-redux-state-examples-git-f-c394df-rajkumar-rathods-projects.vercel.app/)
+[Documentation/demo](https://use-redux-state-examples-qlq9.vercel.app/)
 | [Npm Registry](https://use-redux-state-examples-git-f-c394df-rajkumar-rathods-projects.vercel.app/)
 | [GitHub Repo](https://github.com/rajkumar4041/use-redux-state)
 
