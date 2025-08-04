@@ -24,13 +24,13 @@ A powerful and lightweight React hook library that simplifies Redux state manage
 ## 📦 Installation
 
 ```bash
-npm i redux-toolkit-state
+npm install redux-toolkit-state
 ```
 
 or
 
 ```bash
-yarn add use-toolkit-state
+yarn add redux-toolkit-state
 ```
 
 ## 🚀 Quick Start
