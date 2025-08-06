@@ -400,7 +400,7 @@ Need help? We're here to support you!
 
 ```bash
 # Make sure you're using the correct package name
-npm install use-toolkit-state
+npm install redux-toolkit-state
 
 # For TypeScript support
 npm install --save-dev @types/react @types/react-redux
