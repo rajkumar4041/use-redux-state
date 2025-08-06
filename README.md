@@ -136,6 +136,17 @@ Select multiple redux States at once.
 const states = useMultipleGlobalStates(['user', 'settings', 'theme']);
 ```
 
+## 🪝 Hooks
+
+| Hooks                     | Parameters                                | Returns                                | Description                                                          |
+| ------------------------- | ----------------------------------------- | -------------------------------------- | -------------------------------------------------------------------- |
+| `useReduxState`           | `key: string`, `initialValue?`            | `[value, setValue, { update, reset }]` | Manages global state like `useState`. Supports full/partial updates. |
+| `useReduxStateValue`      | `key: string`                             | `value`                                | Returns the entire value of a redux state for the given key.         |
+| `useReduxStateSetValue`   | `key: string`, `initialValue?`            | `[setValue, update]`                   | Only setters: `setValue` for full, `update` for partial update.      |
+| `useReduxStateReset`      | `key: string`                             | `resetFn`                              | Returns a function to reset the slice to its initial state.          |
+| `useReduxStateSelector`   | `key: string`, `selector: (state) => any` | `selectedValue`                        | Extracts a specific value using a selector function.                 |
+| `useMultipleGlobalStates` | `keys: string[]`                          | `states: Record<key, value>`           | Returns multiple global states as a key-value object.                |
+
 ## 🎯 Examples
 
 ### Basic Usage
