@@ -1,6 +1,6 @@
 {
   "name": "redux-toolkit-state",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "🚀 A powerful & lightweight React hook library that simplifies Redux state management with a familiar useState-like API. Built on Redux Toolkit for optimal performance.",
   "homepage": "https://use-redux-state-examples-qlq9.vercel.app",
   "main": "dist/index.js",
