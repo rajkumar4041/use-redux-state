@@ -3,12 +3,13 @@
  *
  * @author Rajkumar Rathod
  */
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useStoreSelector } from '../react';
 import {
+  ensureKey,
   getState,
   isKeyRegistered,
-  registerKey,
+  notify,
   resetKey,
   setKeyValue,
   updateKeyValue,
@@ -47,10 +48,22 @@ export const useReduxStateWithInitial = <T>(
   key: string,
   initialValue: T
 ): useReduxStateReturn<T> => {
-  // Register the key (idempotent; preserves any value restored from IndexedDB).
+  // Register the key synchronously during render so sibling consumers
+  // (selector hooks) in the same render pass can read it. ensureKey does not
+  // notify, so it is render-safe; we notify any pre-existing subscribers from
+  // an effect after commit if this call created the key.
+  const initKeyRef = useRef<string | null>(null);
+  const createdRef = useRef(false);
+  if (initKeyRef.current !== key) {
+    createdRef.current = ensureKey(key, initialValue);
+    initKeyRef.current = key;
+  }
   useEffect(() => {
-    registerKey(key, initialValue);
-  }, [key, initialValue]);
+    if (createdRef.current) {
+      createdRef.current = false;
+      notify();
+    }
+  }, [key]);
 
   const value = useStoreSelector<T>((s) =>
     key in s ? (s[key] as T) : initialValue

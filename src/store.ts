@@ -53,6 +53,23 @@ export const registerKey = <T>(key: string, initialValue: T): void => {
   }
 };
 
+/**
+ * Render-safe lazy registration. Seeds the key if absent WITHOUT notifying
+ * listeners (safe to call during render), records the initial value, and marks
+ * the key registered. Returns true if it created the key this call, so the
+ * caller can notify any pre-existing subscribers after commit.
+ */
+export const ensureKey = <T>(key: string, initialValue: T): boolean => {
+  initialValues.set(key, initialValue);
+  registeredKeys.add(key);
+  if (key in state) return false;
+  state = { ...state, [key]: initialValue };
+  return true;
+};
+
+/** Notify all listeners (used after a render-time ensureKey created a key). */
+export const notify = (): void => emit();
+
 /** Replace the value at `key`. No-op if the reference is unchanged. */
 export const setKeyValue = <T>(key: string, value: T): void => {
   if (Object.is(state[key], value)) return;

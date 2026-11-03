@@ -23,21 +23,29 @@ export const useStoreSelector = <R>(
   selector: (state: State) => R,
   isEqual: (a: R, b: R) => boolean = Object.is
 ): R => {
+  // Keep the latest selector/isEqual in refs so the stable getSnapshot below
+  // always uses current values — even when the caller passes a fresh selector
+  // or a changed `key` on each render.
+  const selectorRef = useRef(selector);
+  const isEqualRef = useRef(isEqual);
+  selectorRef.current = selector;
+  isEqualRef.current = isEqual;
+
   const cache = useRef<{ has: boolean; value: R }>({
     has: false,
     value: undefined as unknown as R,
   });
 
+  // Stable identity (empty deps) so useSyncExternalStore does not re-subscribe
+  // on every render; it reads the current selector/isEqual via the refs.
   const getSnapshot = useCallback(() => {
-    const next = selector(getState());
+    const next = selectorRef.current(getState());
     const prev = cache.current;
-    if (prev.has && isEqual(prev.value, next)) {
+    if (prev.has && isEqualRef.current(prev.value, next)) {
       return prev.value;
     }
     cache.current = { has: true, value: next };
     return next;
-    // selector/isEqual are expected to be stable per hook call site
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
