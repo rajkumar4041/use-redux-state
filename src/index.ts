@@ -11,6 +11,9 @@ export { GlobalReduxProvider } from './provider';
 
 export type { RootState } from './types';
 
+/** Shallow equality helper for object/array selectors */
+export { shallow } from './shallow';
+
 /** advance imports */
 export {
   getStore,

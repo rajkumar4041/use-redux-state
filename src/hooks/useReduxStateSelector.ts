@@ -1,6 +1,11 @@
-import { useSelector } from 'react-redux';
+/**
+ * Selector hooks for global state.
+ *
+ * @author Rajkumar Rathod
+ */
 import { ReturnAction, SetValueFunction } from '../impl/reduxStateImpl';
-import type { RootState } from '../types';
+import { useStoreSelector } from '../react';
+import { shallow } from '../shallow';
 import { useReduxState } from './useReduxState';
 
 /**
@@ -13,7 +18,7 @@ export function useReduxStateSelector<T, R>(
   key: string,
   selector: (state: T) => R
 ): R {
-  return useSelector((state: RootState) => {
+  return useStoreSelector((state) => {
     const globalState = (state as any)[key] as T;
     if (globalState === undefined) {
       throw new Error(`Global state with key "${key}" does not exist.`);
@@ -32,7 +37,7 @@ export function useReduxStateSelector<T, R>(
  * @returns The value of the global state
  */
 export const useReduxStateValue = <T>(key: string): T => {
-  return useSelector((state: RootState) => (state as any)[key] as T);
+  return useStoreSelector((state) => (state as any)[key] as T);
 };
 
 /**
@@ -43,13 +48,13 @@ export const useReduxStateValue = <T>(key: string): T => {
 export const useMultipleGlobalStates = <T extends Record<string, any>>(
   keys: (keyof T)[]
 ): T => {
-  return useSelector((state: RootState) => {
+  return useStoreSelector((state) => {
     const result = {} as T;
     keys.forEach((key) => {
       result[key] = (state as any)[key as string];
     });
     return result;
-  });
+  }, shallow);
 };
 
 export type ReduxStateSetValueReturnType<T> = [
