@@ -5,6 +5,8 @@
  *
  * @author Rajkumar Rathod
  */
+import { useCallback } from 'react';
+import { useStoreSelector } from './react';
 import { ensureKey, getState, resetKey, setKeyValue, updateKeyValue } from './store';
 
 export type StoreSetValue<S> = (value: S | ((prev: S) => S)) => void;
@@ -51,20 +53,40 @@ export const createStore = <S>(name: string, initialState: S): Store<S> => {
   const update: StoreUpdate<S> = (partial) => updateKeyValue(name, partial);
   const reset = (): void => resetKey(name);
 
-  // Hook members are implemented in Task 2; stubbed here so the type surface is
-  // complete and Task 2's tests have a genuine RED.
-  const notImplemented = (): never => {
-    throw new Error('createStore hooks not implemented yet');
+  const readFrom = (s: Record<string, unknown>): S =>
+    (name in s ? s[name] : initialState) as S;
+
+  const useValue = (): S => useStoreSelector((s) => readFrom(s));
+
+  const useSelector = <R,>(
+    selector: (state: S) => R,
+    isEqual?: (a: R, b: R) => boolean
+  ): R => useStoreSelector((s) => selector(readFrom(s)), isEqual);
+
+  const useSet = (): [StoreSetValue<S>, StoreUpdate<S>] => {
+    // set/update/reset close over `name`, so their identity is already stable.
+    const stableSet = useCallback<StoreSetValue<S>>(set, []);
+    const stableUpdate = useCallback<StoreUpdate<S>>(update, []);
+    return [stableSet, stableUpdate];
   };
+
+  const use = (): [S, StoreSetValue<S>, { update: StoreUpdate<S>; reset: () => void }] => {
+    const value = useValue();
+    const [stableSet, stableUpdate] = useSet();
+    const stableReset = useCallback(reset, []);
+    return [value, stableSet, { update: stableUpdate, reset: stableReset }];
+  };
+
+  const useReset = (): (() => void) => useCallback(reset, []);
 
   return {
     key: name,
     get,
     set,
-    use: notImplemented,
-    useValue: notImplemented,
-    useSelector: notImplemented,
-    useSet: notImplemented,
-    useReset: notImplemented,
+    use,
+    useValue,
+    useSelector,
+    useSet,
+    useReset,
   };
 };
