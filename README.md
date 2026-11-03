@@ -1,11 +1,12 @@
 # 🚀 redux-toolkit-state
 
-[![npm version](https://badge.fury.io/js/use-redux-state.svg)](https://www.npmjs.com/package/redux-toolkit-state)
+
+[![npm version](https://img.shields.io/npm/v/hook-toolkit.svg)](https://www.npmjs.com/package/redux-toolkit-state)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
 
-A powerful and lightweight React hook library that simplifies Redux state management with a familiar `useState`-like API. Built on top of Redux Toolkit for optimal performance and developer experience
+A powerful and lightweight React hook library for global state with a familiar `useState`-like API. **Zero runtime dependencies** — no Redux, no react-redux, no Context/Provider boilerplate. Includes optional survive-a-refresh persistence via IndexedDB.
 
 [Documentation/demo](https://use-redux-state-examples-qlq9.vercel.app/)
 | [Npm Registry](https://www.npmjs.com/package/redux-toolkit-state)
@@ -13,13 +14,13 @@ A powerful and lightweight React hook library that simplifies Redux state manage
 
 ## ✨ Features
 
-- 🎯 **Simple API**: Use redux State with a familiar `useState`-like interface
-- 🔄 **Dynamic State Creation**: Automatically create and manage Redux slices on-demand
-- 🎨 **TypeScript Support**: Full TypeScript support with excellent type inference
-- ⚡ **Performance Optimized**: Built on Redux Toolkit for optimal performance
-- 🔧 **Flexible Selectors**: Advanced state selection capabilities
+- 🎯 **Simple API**: Global state with a familiar `useState`-like interface
+- 📦 **Zero dependencies**: No Redux, no react-redux — React is just a peer dependency
+- 🧩 **No Provider required**: State is global out of the box; the Provider is only needed for persistence
+- 💾 **Survive-refresh persistence**: Optional ephemeral IndexedDB bridge restores state after a reload, then clears itself
+- 🎨 **TypeScript Support**: Full TypeScript support with type inference
+- 🔧 **Flexible Selectors**: Fine-grained, selector-based re-renders via `useSyncExternalStore`
 - 🚀 **Zero Configuration**: Minimal setup required
-- 📦 **Lightweight**: Small bundle size with no unnecessary dependencies
 
 ## 📦 Installation
 
@@ -35,24 +36,11 @@ yarn add redux-toolkit-state
 
 ## 🚀 Quick Start
 
-### 1. Wrap your app with the provider
+No Provider needed — just use the hook anywhere. Any component using the same
+key shares the value.
 
 ```tsx
-import { GlobalReduxProvider } from 'use-toolkit-state';
-
-function App() {
-  return (
-    <GlobalReduxProvider>
-      <YourApp />
-    </GlobalReduxProvider>
-  );
-}
-```
-
-### 2. Use redux State anywhere in your app
-
-```tsx
-import { useReduxState } from 'use-toolkit-state';
+import { useReduxState } from 'redux-toolkit-state';
 
 function Counter() {
   const [count, setCount] = useReduxState('counter', 0);
@@ -65,6 +53,85 @@ function Counter() {
   );
 }
 ```
+
+### Optional: persist state across a page refresh
+
+Wrap your app in `GlobalReduxProvider` to enable the ephemeral IndexedDB
+persistence. State is stashed in IndexedDB, restored on the next load, then
+**wiped** — a bridge across a refresh, not long-term storage. Because the read
+is async, the first paint shows initial values and then re-renders once restore
+completes. Safe (no-ops) in SSR / environments without IndexedDB.
+
+```tsx
+import { GlobalReduxProvider } from 'redux-toolkit-state';
+
+function App() {
+  return (
+    <GlobalReduxProvider>
+      <YourApp />
+    </GlobalReduxProvider>
+  );
+}
+```
+
+## 🗂️ Recommended structure: one store per file (convention)
+
+> This is a **convention, not a restriction** — the library never checks your
+> file paths. It just keeps state centralized, typed in one place, and reusable.
+
+Create a `store/` folder and give each piece of state its own file. The file
+owns the **key** and the **type** so you never repeat them at call sites:
+
+```ts
+// store/counter.ts
+import { useReduxState } from 'redux-toolkit-state';
+
+const KEY = 'counter';
+
+export const useCounter = () => useReduxState<number>(KEY, 0);
+```
+
+```ts
+// store/user.ts
+import { useReduxState, useReduxStateValue } from 'redux-toolkit-state';
+
+export interface User {
+  name: string;
+  email: string;
+}
+
+const KEY = 'user';
+const initialUser: User = { name: '', email: '' };
+
+export const useUser = () => useReduxState<User>(KEY, initialUser);
+export const useUserValue = () => useReduxStateValue<User>(KEY); // read-only
+```
+
+Then components just import the hook — no string keys, no repeated generics:
+
+```tsx
+import { useCounter } from '@/store/counter';
+import { useUser } from '@/store/user';
+
+function Profile() {
+  const [count, setCount] = useCounter();
+  const [user, setUser, { update }] = useUser();
+  // ...
+}
+```
+
+Suggested layout:
+
+```
+src/
+  store/
+    counter.ts
+    user.ts
+    cart.ts
+```
+
+Because every component imports from the same file, the key and type stay in
+**one source of truth** and the store is trivially reusable across the app.
 
 ## 📚 API Reference
 
@@ -141,7 +208,7 @@ const states = useMultipleGlobalStates(['user', 'settings', 'theme']);
 ### Basic Usage
 
 ```tsx
-import { useReduxState } from 'use-toolkit-state';
+import { useReduxState } from 'redux-toolkit-state';
 
 function UserProfile() {
   const [user, setUser] = useReduxState('user', {
@@ -257,7 +324,7 @@ function ShoppingCart() {
 ### Store Management
 
 ```tsx
-import { clearSlices, getRegisteredKeys, getStore } from 'use-toolkit-state';
+import { clearSlices, getRegisteredKeys, getStore } from 'redux-toolkit-state';
 
 // Get the store instance
 const store = getStore();
@@ -403,19 +470,19 @@ Need help? We're here to support you!
 npm install redux-toolkit-state
 
 # For TypeScript support
-npm install --save-dev @types/react @types/react-redux
+npm install --save-dev @types/react
 ```
 
-**Runtime Errors**
+**Persistence not working**
 
 ```tsx
-// ❌ Wrong - missing provider
+// ❌ State is lost on refresh - no provider, so persistence is off
 function App() {
   return <YourApp />;
 }
 
-// ✅ Correct - with provider
-import { GlobalReduxProvider } from 'use-toolkit-state';
+// ✅ Wrap with the provider to enable survive-refresh persistence
+import { GlobalReduxProvider } from 'redux-toolkit-state';
 
 function App() {
   return (
@@ -425,6 +492,9 @@ function App() {
   );
 }
 ```
+
+> Note: the Provider is **only** for persistence. Plain global state works
+> without it.
 
 **State Access Issues**
 
@@ -459,7 +529,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Built with [Redux Toolkit](https://redux-toolkit.js.org/)
+- Zero-dependency vanilla store inspired by [Zustand](https://github.com/pmndrs/zustand)'s architecture
 - Inspired by React's `useState` hook
 - Made with ❤️ for the React community
 - Special thanks to all our contributors and users
