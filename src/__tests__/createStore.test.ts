@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, expect, it } from 'vitest';
 import { createStore } from '../createStore';
 import { clearSlices } from '../store';
 
@@ -26,12 +26,16 @@ it('set works before any hook mounts (imperative-first)', () => {
   expect(s.get()).toEqual({ v: 11 });
 });
 
-it('reset restores the initial state', () => {
+it('exposes a useReset hook on the bundle', () => {
+  const s = createStore('counter', { count: 0 });
+  expect(typeof s.useReset).toBe('function');
+  // (useReset's reset behavior is exercised in createStore.hooks.test.tsx)
+});
+
+it('set(get()) is a consistent no-op write', () => {
   const s = createStore('counter', { count: 0 });
   s.set({ count: 9 });
-  s.useReset; // reset fn shape exists on the bundle
-  // imperative reset path via set/get round-trip
-  s.set(s.get()); // no-op write stays consistent
+  s.set(s.get());
   expect(s.get()).toEqual({ count: 9 });
 });
 

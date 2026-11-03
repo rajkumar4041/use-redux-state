@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, expect, it } from 'vitest';
 import { createStore } from '../createStore';
 import { shallow } from '../shallow';
 import { clearSlices } from '../store';
