@@ -4,10 +4,19 @@ export {
   useReduxStateSelector,
   useMultipleGlobalStates,
   useReduxStateValue,
+  useReduxStateSetValue,
+  useReduxStateReset,
 } from './hooks/useReduxStateSelector';
 export { GlobalReduxProvider } from './provider';
 
 export type { RootState } from './types';
+
+/** Shallow equality helper for object/array selectors */
+export { shallow } from './shallow';
+
+/** Typed store factory */
+export { createStore } from './createStore';
+export type { Store, StoreSetValue, StoreUpdate } from './createStore';
 
 /** advance imports */
 export {

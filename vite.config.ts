@@ -17,14 +17,12 @@ export default defineConfig({
     rollupOptions: {
       // Marks these packages as external, meaning they won’t be bundled into final output.
       // This keeps  package lean and avoids duplicating dependencies in users' apps.
-      external: ['react', 'react-dom', 'react-redux', '@reduxjs/toolkit'],
+      external: ['react', 'react-dom'],
       output: {
         sourcemap: true,
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
-          'react-redux': 'ReactRedux',
-          '@reduxjs/toolkit': 'ReduxToolkit',
         },
       },
     },

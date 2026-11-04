@@ -1,13 +1,21 @@
-import React from 'react';
-import { Provider } from 'react-redux';
-import { getStore } from './store';
+import React, { useEffect } from 'react';
+import { initPersistence } from './persist';
 
 interface GlobalStateProviderProps {
   children: React.ReactNode;
 }
 
+/**
+ * Optional provider. The store itself is global and needs no Context, so this
+ * only initialises the ephemeral IndexedDB persistence (survive-refresh) once.
+ * Wrapping your app is only required if you want persistence.
+ *
+ * @author Rajkumar Rathod
+ */
 export function GlobalReduxProvider({ children }: GlobalStateProviderProps) {
-  const store = getStore();
+  useEffect(() => {
+    initPersistence();
+  }, []);
 
-  return <Provider store={store}>{children}</Provider>;
+  return <>{children}</>;
 }

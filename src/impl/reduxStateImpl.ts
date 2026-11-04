@@ -1,10 +1,22 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSliceForKey, getSliceForKey } from '../store';
-import type { RootState } from '../types';
+/**
+ * useReduxState hook implementation (vanilla store, no Redux).
+ *
+ * @author Rajkumar Rathod
+ */
+import { useCallback, useEffect, useRef } from 'react';
+import { useStoreSelector } from '../react';
+import {
+  ensureKey,
+  getState,
+  isKeyRegistered,
+  notify,
+  resetKey,
+  setKeyValue,
+  updateKeyValue,
+} from '../store';
 
 // Type for the setter function
-type SetValueFunction<T> = (value: T | ((prevValue: T) => T)) => void;
+export type SetValueFunction<T> = (value: T | ((prevValue: T) => T)) => void;
 
 // Type for the update function (for partial updates)
 type UpdateValueFunction<T> = (updates: Partial<T>) => void;
@@ -13,7 +25,7 @@ type UpdateValueFunction<T> = (updates: Partial<T>) => void;
 type ResetFunction = () => void;
 
 // Type for the return action object
-type ReturnAction<T> = {
+export type ReturnAction<T> = {
   update: UpdateValueFunction<T>;
   reset: ResetFunction;
 };
@@ -21,9 +33,14 @@ type ReturnAction<T> = {
 // Return type for the hook
 export type useReduxStateReturn<T> = [T, SetValueFunction<T>, ReturnAction<T>];
 
+const readValue = <T>(key: string, fallback: T): T => {
+  const s = getState();
+  return key in s ? (s[key] as T) : fallback;
+};
+
 /**
- * Custom hook for redux State management
- * @param key - Unique identifier for the redux State
+ * Custom hook for global state management (useState-like API).
+ * @param key - Unique identifier for the state slice
  * @param initialValue - Initial value for the state
  * @returns [value, setValue, { update, reset }]
  */
@@ -31,107 +48,83 @@ export const useReduxStateWithInitial = <T>(
   key: string,
   initialValue: T
 ): useReduxStateReturn<T> => {
-  const dispatch = useDispatch();
+  // Register the key synchronously during render so sibling consumers
+  // (selector hooks) in the same render pass can read it. ensureKey does not
+  // notify, so it is render-safe; we notify any pre-existing subscribers from
+  // an effect after commit if this call created the key.
+  const initKeyRef = useRef<string | null>(null);
+  const createdRef = useRef(false);
+  if (initKeyRef.current !== key) {
+    createdRef.current = ensureKey(key, initialValue);
+    initKeyRef.current = key;
+  }
+  useEffect(() => {
+    if (createdRef.current) {
+      createdRef.current = false;
+      notify();
+    }
+  }, [key]);
 
-  // Create or get the slice for this key
-  const slice = useMemo(() => {
-    const existingSlice = getSliceForKey<T>(key);
-    if (existingSlice) return existingSlice;
+  const value = useStoreSelector<T>((s) =>
+    key in s ? (s[key] as T) : initialValue
+  );
 
-    return createSliceForKey<T>(key, initialValue);
-  }, [key, initialValue]);
-
-  /**  (getter Function)
-   * This uses the useSelector hook to access the Redux store and retrieve the value associated with the given key.
-   *
-   * @param state - The Redux state
-   * @returns The value associated with the key
-   */
-  const value = useSelector((state: RootState) => (state as any)[key] as T);
-
-  // Setter function (similar to useState)
   const setValue = useCallback<SetValueFunction<T>>(
     (newValue) => {
       if (typeof newValue === 'function') {
         const updater = newValue as (prevValue: T) => T;
-        dispatch(slice.actions.setValue(updater(value)));
+        setKeyValue(key, updater(readValue(key, initialValue)));
       } else {
-        dispatch(slice.actions.setValue(newValue));
+        setKeyValue(key, newValue);
       }
     },
-    [dispatch, slice.actions, value]
+    [key, initialValue]
   );
 
-  // Update function for partial updates (useful for objects)
   const update = useCallback<UpdateValueFunction<T>>(
-    (updates) => {
-      dispatch(slice.actions.updateValue(updates));
-    },
-    [dispatch, slice.actions]
+    (updates) => updateKeyValue(key, updates),
+    [key]
   );
 
-  // Reset function to restore initial value
-  const reset = useCallback<ResetFunction>(() => {
-    dispatch(slice.actions.reset(undefined));
-  }, [dispatch, slice.actions]);
+  const reset = useCallback<ResetFunction>(() => resetKey(key), [key]);
 
-  // Initialize the state if it doesn't exist
-  useEffect(() => {
-    if (value === undefined) {
-      setValue(initialValue);
-    }
-  }, [value, initialValue, setValue]);
-
-  // Return the value or initial value if undefined
-  const currentValue = value !== undefined ? value : initialValue;
-
-  return [currentValue, setValue, { update, reset }];
+  return [value, setValue, { update, reset }];
 };
 
 /**
- * Custom hook for accessing existing redux State
- * @param key - Unique identifier for the redux State
+ * Custom hook for accessing existing global state (no initial value).
+ * @param key - Unique identifier for the state slice
  * @returns [value, setValue, { update, reset }]
  */
 export const useReduxStateExisting = <T>(
   key: string
 ): useReduxStateReturn<T> => {
-  const dispatch = useDispatch();
-
-  // Try to get existing slice
-  const existingSlice = getSliceForKey<T>(key);
-  if (!existingSlice) {
+  if (!isKeyRegistered(key)) {
     throw new Error(
       `redux State with key "${key}" does not exist. Please provide an initial value.`
     );
   }
 
-  const value = useSelector((state: RootState) => {
-    return (state as any)[key] as T;
-  });
+  const value = useStoreSelector<T>((s) => s[key] as T);
 
   const setValue = useCallback<SetValueFunction<T>>(
     (newValue) => {
       if (typeof newValue === 'function') {
         const updater = newValue as (prevValue: T) => T;
-        dispatch(existingSlice.actions.setValue(updater(value)));
+        setKeyValue(key, updater(getState()[key] as T));
       } else {
-        dispatch(existingSlice.actions.setValue(newValue));
+        setKeyValue(key, newValue);
       }
     },
-    [dispatch, existingSlice.actions, value]
+    [key]
   );
 
   const update = useCallback<UpdateValueFunction<T>>(
-    (updates) => {
-      dispatch(existingSlice.actions.updateValue(updates));
-    },
-    [dispatch, existingSlice.actions]
+    (updates) => updateKeyValue(key, updates),
+    [key]
   );
 
-  const reset = useCallback<ResetFunction>(() => {
-    dispatch(existingSlice.actions.reset(undefined));
-  }, [dispatch, existingSlice.actions]);
+  const reset = useCallback<ResetFunction>(() => resetKey(key), [key]);
 
   return [value, setValue, { update, reset }];
 };

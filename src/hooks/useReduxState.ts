@@ -1,3 +1,8 @@
+/**
+ * useReduxState — useState-like global state hook.
+ *
+ * @author Rajkumar Rathod
+ */
 import {
   useReduxStateExisting,
   useReduxStateReturn,

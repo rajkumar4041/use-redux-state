@@ -1,131 +1,157 @@
-import {
-  combineReducers,
-  configureStore,
-  createSlice,
-  PayloadAction,
-  Slice,
-} from '@reduxjs/toolkit';
-
-/* Global store instance
-   @singleton-pattern
- */
-let store: ReturnType<typeof createStore> | null = null;
-
 /**
- * Dynamic reducers object
- * This will hold the reducers that can be added dynamically.
- * It starts empty and can be populated as needed.
- */
-let dynamicReducers: Record<string, any> = {};
-
-// Registry to track created slices
-const sliceRegistry = new Map<string, Slice>();
-
-// Create the store with dynamic slice injection
-const createStore = () => {
-  return configureStore({
-    /**
-     *  Combine all dynamic reducers with any initial reducers
-     *  This allows for dynamic addition of reducers at runtime.
-     */
-    reducer: combineReducers(dynamicReducers),
-    /**
-     * Middleware configuration
-     * @param getDefaultMiddleware - The default middleware provided by Redux Toolkit
-     * @returns The customized middleware
-     */
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        /** This option is used to ignore certain actions from being checked for serializability.*/
-        serializableCheck: {
-          /** avoid warning for non serialize data */
-          ignoredActions: ['persist/PERSIST'],
-        },
-      }),
-  });
-};
-
-/**
- * Get or create store instance
- * @returns The singleton store instance
- */
-export const getStore = () => {
-  if (!store) store = createStore();
-
-  return store;
-};
-
-/**
- * @description Creates a Redux slice for a given key with initial value.
+ * Vanilla, dependency-free keyed store.
  *
- * @param key - Unique identifier for the slice
- * @param initialValue - Initial value for the slice
- * @returns The created slice
+ * Replaces the previous Redux Toolkit implementation. There is no Redux, no
+ * react-redux and no external dependency here — just a closure holding a
+ * keyed state object plus a Set of listeners (the Zustand pattern).
+ *
+ * @author Rajkumar Rathod
  */
-export const createSliceForKey = <T>(key: string, initialValue: T): Slice<T> => {
-  /**
-   * check if the slice already exists in the registry
-   * If it does, return the existing slice.
-   * to prevent duplicate slices creation (ensure each key has only one slice)
-   */
-  if (sliceRegistry.has(key)) return sliceRegistry.get(key)! as Slice<T>;
 
-  const slice = createSlice({
-    name: key,
-    initialState: initialValue,
-    reducers: {
-      setValue: (_state, action: PayloadAction<T>) => {
-        return action.payload;
-      },
-      updateValue: (state, action: PayloadAction<Partial<T>>) => {
-        if (typeof state === 'object' && state !== null) {
-          return { ...state, ...action.payload };
-        }
-        return action.payload as T;
-      },
-      reset: () => initialValue,
-    },
-  });
+type Listener = () => void;
 
-  // Register the slice
-  sliceRegistry.set(key, slice);
+/** The whole app state, keyed by slice name. */
+let state: Record<string, unknown> = {};
 
-  /**
-   * This adds the slice's reducer to the dynamicReducers object.
-   * This allows the reducer to be combined with others in the store.
-   */
-  dynamicReducers[key] = slice.reducer;
+/** Listeners notified on every state change. */
+const listeners = new Set<Listener>();
 
-  /**
-   * If the store already exists, replace its reducer with the new one.
-   * This is necessary to ensure that the new slice is included in the store's reducer.
-   */
-  if (store) {
-    const newRootReducer = combineReducers(dynamicReducers);
-    store.replaceReducer(newRootReducer);
-  }
+/** Declared initial values per key (used by `reset`). */
+const initialValues = new Map<string, unknown>();
 
-  return slice;
+/** Keys that have been registered via a hook or `createSliceForKey`. */
+const registeredKeys = new Set<string>();
+
+/** Notify every subscriber that the state changed. */
+const emit = (): void => {
+  listeners.forEach((listener) => listener());
 };
 
-/** * Get a slice for a given key
- * @param key - The unique identifier for the slice
+/** Current state snapshot (stable reference until the next change). */
+export const getState = (): Record<string, unknown> => state;
+
+/** Subscribe to state changes. Returns an unsubscribe function. */
+export const subscribe = (listener: Listener): (() => void) => {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+};
+
+/** Whether a key has been registered. */
+export const isKeyRegistered = (key: string): boolean => registeredKeys.has(key);
+
+/**
+ * Register a key with its initial value. Idempotent: an existing value
+ * (e.g. one restored from IndexedDB) is preserved, only the initial value
+ * used by `reset` is (re)recorded.
  */
-export const getSliceForKey = <T>(key: string): Slice<T> | null => {
-  return sliceRegistry.get(key) as Slice<T> | null;
+export const registerKey = <T>(key: string, initialValue: T): void => {
+  initialValues.set(key, initialValue);
+  registeredKeys.add(key);
+  if (!(key in state)) {
+    state = { ...state, [key]: initialValue };
+    emit();
+  }
 };
 
 /**
- * Get all registered keys
- * @returns An array of keys for all registered slices
+ * Render-safe lazy registration. Seeds the key if absent WITHOUT notifying
+ * listeners (safe to call during render), records the initial value, and marks
+ * the key registered. Returns true if it created the key this call, so the
+ * caller can notify any pre-existing subscribers after commit.
  */
-export const getRegisteredKeys = (): string[] => {
-  return Array.from(sliceRegistry.keys());
+export const ensureKey = <T>(key: string, initialValue: T): boolean => {
+  initialValues.set(key, initialValue);
+  registeredKeys.add(key);
+  if (key in state) return false;
+  state = { ...state, [key]: initialValue };
+  return true;
 };
 
-/** clear all slices to check slices registry and clean up */
-export const clearSlices = () => {
-  sliceRegistry.clear();
-  dynamicReducers = {};
-  store = null;
+/** Notify all listeners (used after a render-time ensureKey created a key). */
+export const notify = (): void => emit();
+
+/** Replace the value at `key`. No-op if the reference is unchanged. */
+export const setKeyValue = <T>(key: string, value: T): void => {
+  if (Object.is(state[key], value)) return;
+  state = { ...state, [key]: value };
+  emit();
+};
+
+/** Shallow-merge a partial into the value at `key` (objects only). */
+export const updateKeyValue = <T>(key: string, partial: Partial<T>): void => {
+  const current = state[key];
+  const next =
+    typeof current === 'object' && current !== null
+      ? { ...(current as object), ...(partial as object) }
+      : (partial as unknown as T);
+  setKeyValue(key, next);
+};
+
+/** Reset a key back to the initial value it was registered with. */
+export const resetKey = (key: string): void => {
+  setKeyValue(key, initialValues.get(key));
+};
+
+/** Bulk-apply a restored snapshot (used by the persistence layer). */
+export const hydrate = (saved: Record<string, unknown>): void => {
+  state = { ...state, ...saved };
+  Object.keys(saved).forEach((key) => registeredKeys.add(key));
+  emit();
+};
+
+/* ------------------------------------------------------------------ */
+/* Backwards-compatible "advanced" API                                 */
+/* These keep the names/shapes the previous Redux version exported so  */
+/* existing consumers don't break, implemented in vanilla terms.       */
+/* ------------------------------------------------------------------ */
+
+/** A lightweight, slice-like handle for a key. */
+export interface KeySlice<T> {
+  name: string;
+  getInitialState: () => T;
+  actions: {
+    setValue: (value: T) => void;
+    updateValue: (partial: Partial<T>) => void;
+    reset: () => void;
+  };
+}
+
+const makeSlice = <T>(key: string): KeySlice<T> => ({
+  name: key,
+  getInitialState: () => initialValues.get(key) as T,
+  actions: {
+    setValue: (value: T) => setKeyValue(key, value),
+    updateValue: (partial: Partial<T>) => updateKeyValue(key, partial),
+    reset: () => resetKey(key),
+  },
+});
+
+/** The singleton store handle. */
+export const getStore = () => ({
+  getState,
+  subscribe,
+  setValue: setKeyValue,
+  updateValue: updateKeyValue,
+  reset: resetKey,
+});
+
+/** Create (or return the existing) slice handle for a key. */
+export const createSliceForKey = <T>(key: string, initialValue: T): KeySlice<T> => {
+  registerKey(key, initialValue);
+  return makeSlice<T>(key);
+};
+
+/** Get the slice handle for a key, or null if it was never registered. */
+export const getSliceForKey = <T>(key: string): KeySlice<T> | null =>
+  registeredKeys.has(key) ? makeSlice<T>(key) : null;
+
+/** All registered keys. */
+export const getRegisteredKeys = (): string[] => Array.from(registeredKeys);
+
+/** Clear everything — state, registry and initial values. */
+export const clearSlices = (): void => {
+  state = {};
+  initialValues.clear();
+  registeredKeys.clear();
+  emit();
 };

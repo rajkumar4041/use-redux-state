@@ -1,8 +1,10 @@
-module.exports = {
+import type { Linter } from 'eslint';
+
+const config: Linter.Config = {
   parser: '@typescript-eslint/parser',
   extends: [
     'eslint:recommended',
-    '@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
     'plugin:jsx-a11y/recommended',
@@ -40,3 +42,5 @@ module.exports = {
   },
   ignorePatterns: ['dist/', 'node_modules/', '*.config.js'],
 };
+
+export default config;
